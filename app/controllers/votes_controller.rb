@@ -1,5 +1,6 @@
 class VotesController < ApplicationController
   before_action :set_vote, only: %i[ show update destroy ]
+  before_action :authorized
 
   # GET /votes
   def index

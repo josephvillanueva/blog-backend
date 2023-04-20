@@ -23,7 +23,7 @@ class UsersController < ApplicationController
         render json: {error: "Invalid username or password"}
       end
     end
-  
+
   
     def auto_login
       render json: @user
