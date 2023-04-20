@@ -1,11 +1,15 @@
 class BlogsController < ApplicationController
   before_action :set_blog, only: %i[ show update destroy ]
-  before_action :authorized
+  before_action :authorized, only: %i[ create update destroy]
 
   # GET /blogs
   def index
     @blogs = Blog.where(user_id: @user.id)
+    render json: @blogs
+  end
 
+  def indexAll
+    @blogs = Blog.all
     render json: @blogs
   end
 
