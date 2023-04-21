@@ -23,6 +23,8 @@ class BlogsController < ApplicationController
     @blog = Blog.new(blog_params)
     @blog.user_id = @user.id
 
+    puts blog_params
+
     if @blog.save
       render json: @blog, status: :created, location: @blog
     else
@@ -52,6 +54,6 @@ class BlogsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def blog_params
-      params.require(:blog).permit(:title, :body, :user_id, :tags)
+      params.require(:blog).permit(:title, :body, :user_id, :tags, :status)
     end
 end
