@@ -4,14 +4,16 @@ class BlogsController < ApplicationController
 
   # GET /blogs
   def index
-    @blogs = Blog.where(user_id: @user.id)
+    @blogs = Blog.find_by_sql('SELECT blogs.*, users.username, users.email FROM blogs INNER JOIN users ON users.id = blogs.user_id')
+  
+
     render json: @blogs
   end
 
-  def indexAll
-    @blogs = Blog.all
-    render json: @blogs
-  end
+  # def indexAll
+  #   @blogs = Blog.all
+  #   render json: @blogs
+  # end
 
   # GET /blogs/1
   def show
@@ -23,7 +25,6 @@ class BlogsController < ApplicationController
     @blog = Blog.new(blog_params)
     @blog.user_id = @user.id
 
-    puts blog_params
 
     if @blog.save
       render json: @blog, status: :created, location: @blog
@@ -54,6 +55,6 @@ class BlogsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def blog_params
-      params.require(:blog).permit(:title, :body, :user_id, :tags, :status)
+      params.require(:blog).permit(:title, :body, :user_id, :status,  :tag => [])
     end
 end
