@@ -6,7 +6,6 @@ class BlogsController < ApplicationController
   def index
     @blogs = Blog.find_by_sql('SELECT blogs.*, users.username, users.email FROM blogs INNER JOIN users ON users.id = blogs.user_id')
   
-
     render json: @blogs
   end
 
@@ -24,6 +23,7 @@ class BlogsController < ApplicationController
   def create
     @blog = Blog.new(blog_params)
     @blog.user_id = @user.id
+    @blog.username = @user.username
 
 
     if @blog.save

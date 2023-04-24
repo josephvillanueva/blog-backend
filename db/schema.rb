@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_22_012013) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_24_041220) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -23,6 +23,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_22_012013) do
     t.text "blog"
     t.text "tag", default: [], array: true
     t.string "status"
+    t.string "username"
     t.index ["user_id"], name: "index_blogs_on_user_id"
   end
 
