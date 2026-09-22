@@ -1,11 +1,20 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+alice_post:
+  user: alice
+  title: Alice's first post
+  body: Hello from Alice.
+  status: published
+  tags: "{rails,api}"
 
-one:
-  title: MyString
-  body: MyText
-  user: one
+alice_draft:
+  user: alice
+  title: Alice's draft
+  body: Not ready yet.
+  status: draft
+  tags: "{rails}"
 
-two:
-  title: MyString
-  body: MyText
-  user: two
+bob_post:
+  user: bob
+  title: Bob's post
+  body: Hello from Bob.
+  status: published
+  tags: "{product}"

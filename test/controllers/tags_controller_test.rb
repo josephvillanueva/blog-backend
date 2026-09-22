@@ -1,38 +1,11 @@
 require "test_helper"
 
 class TagsControllerTest < ActionDispatch::IntegrationTest
-  setup do
-    @tag = tags(:one)
-  end
-
-  test "should get index" do
+  test "counts tags on published posts only, most used first" do
     get tags_url, as: :json
+
     assert_response :success
-  end
-
-  test "should create tag" do
-    assert_difference("Tag.count") do
-      post tags_url, params: { tag: { tag: @tag.tag } }, as: :json
-    end
-
-    assert_response :created
-  end
-
-  test "should show tag" do
-    get tag_url(@tag), as: :json
-    assert_response :success
-  end
-
-  test "should update tag" do
-    patch tag_url(@tag), params: { tag: { tag: @tag.tag } }, as: :json
-    assert_response :success
-  end
-
-  test "should destroy tag" do
-    assert_difference("Tag.count", -1) do
-      delete tag_url(@tag), as: :json
-    end
-
-    assert_response :no_content
+    assert_equal [{ "tag" => "api", "count" => 1 }, { "tag" => "product", "count" => 1 }, { "tag" => "rails", "count" => 1 }],
+                 json
   end
 end

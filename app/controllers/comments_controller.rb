@@ -1,52 +1,56 @@
 class CommentsController < ApplicationController
-  before_action :set_comment, only: %i[ show update destroy ]
-  before_action :authorized
+  skip_before_action :authorize!, only: :index
+  before_action :set_blog, only: %i[index create]
+  before_action :set_comment, only: %i[update destroy]
 
-  # GET /comments
+  # GET /blogs/:blog_id/comments
   def index
-    @comments = Comment.all
-
-    render json: @comments
+    render json: @blog.comments.includes(:user).order(:created_at)
   end
 
-  # GET /comments/1
-  def show
-    render json: @comment
-  end
-
-  # POST /comments
+  # POST /blogs/:blog_id/comments
   def create
-    @comment = Comment.new(comment_params)
-
-    if @comment.save
-      render json: @comment, status: :created, location: @comment
+    comment = @blog.comments.new(comment_params.merge(user: current_user))
+    if comment.save
+      render json: comment, status: :created
     else
-      render json: @comment.errors, status: :unprocessable_entity
+      render_errors(comment)
     end
   end
 
-  # PATCH/PUT /comments/1
+  # PATCH /comments/:id
   def update
+    return forbid("You can only edit your own comments") unless @comment.user_id == current_user.id
+
     if @comment.update(comment_params)
       render json: @comment
     else
-      render json: @comment.errors, status: :unprocessable_entity
+      render_errors(@comment)
     end
   end
 
-  # DELETE /comments/1
+  # DELETE /comments/:id
+  # The comment's author or the post's author can remove it.
   def destroy
+    unless [@comment.user_id, @comment.blog.user_id].include?(current_user.id)
+      return forbid("You can only delete your own comments or comments on your posts")
+    end
+
     @comment.destroy
+    head :no_content
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_comment
-      @comment = Comment.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def comment_params
-      params.require(:comment).permit(:body, :user_id)
-    end
+  def set_blog
+    @blog = Blog.visible_to(current_user).find(params[:blog_id])
+  end
+
+  def set_comment
+    @comment = Comment.find(params[:id])
+  end
+
+  def comment_params
+    params.require(:comment).permit(:body)
+  end
 end
