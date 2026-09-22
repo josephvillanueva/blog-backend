@@ -26,7 +26,7 @@ class ReworkCommentsVotesAndTags < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    remove_column :blogs, :blog, :text
+    remove_column :blogs, :blog, :text, if_exists: true # also never created by a migration
     remove_column :blogs, :username, :string
     rename_column :blogs, :tag, :tags
     change_column_default :blogs, :status, from: nil, to: "published"
