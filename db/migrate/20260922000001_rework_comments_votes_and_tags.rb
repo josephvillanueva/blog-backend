@@ -19,7 +19,9 @@ class ReworkCommentsVotesAndTags < ActiveRecord::Migration[7.0]
     end
     add_index :votes, %i[user_id blog_id], unique: true
 
-    drop_table :tags do |t|
+    # No earlier migration creates tags (it only ever existed in schema.rb),
+    # so the drop must tolerate its absence on a freshly migrated database.
+    drop_table :tags, if_exists: true do |t|
       t.string :tag
       t.timestamps
     end
