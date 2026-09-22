@@ -13,6 +13,10 @@ Started during a 2023 bootcamp by Joseph Villanueva and Ian Drilon, and finished
 - **Tags:** a list of tags used on published posts, with counts.
 - **Privacy:** public responses carry usernames only, never email addresses or password hashes.
 
+## Architecture
+
+![Blog Backend architecture: clients send JSON requests to Rails routes and controllers, which verify JWTs and run scoped queries through the models against PostgreSQL; GitHub Actions migrates, checks the schema, and runs the tests on every pull request](docs/architecture.svg)
+
 ## API
 
 Send the token as `Authorization: Bearer <token>`. Errors return JSON with `error` or `errors` and a matching HTTP status (400, 401, 403, 404, or 422).
