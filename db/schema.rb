@@ -52,8 +52,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_09_22_000001) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["blog_id"], name: "index_votes_on_blog_id"
-    t.index ["user_id"], name: "index_votes_on_user_id"
     t.index ["user_id", "blog_id"], name: "index_votes_on_user_id_and_blog_id", unique: true
+    t.index ["user_id"], name: "index_votes_on_user_id"
   end
 
   add_foreign_key "blogs", "users"
