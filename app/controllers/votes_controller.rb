@@ -1,52 +1,31 @@
 class VotesController < ApplicationController
-  before_action :set_vote, only: %i[ show update destroy ]
-  before_action :authorized
+  before_action :set_blog
 
-  # GET /votes
-  def index
-    @votes = Vote.all
-
-    render json: @votes
-  end
-
-  # GET /votes/1
-  def show
-    render json: @vote
-  end
-
-  # POST /votes
+  # POST /blogs/:blog_id/vote  { "value": 1 } or { "value": -1 }
+  # Casting again replaces the user's earlier vote on this post.
   def create
-    @vote = Vote.new(vote_params)
-
-    if @vote.save
-      render json: @vote, status: :created, location: @vote
+    vote = @blog.votes.find_or_initialize_by(user: current_user)
+    vote.value = Integer(params[:value], exception: false)
+    if vote.save
+      render json: vote_payload(vote.value)
     else
-      render json: @vote.errors, status: :unprocessable_entity
+      render_errors(vote)
     end
   end
 
-  # PATCH/PUT /votes/1
-  def update
-    if @vote.update(vote_params)
-      render json: @vote
-    else
-      render json: @vote.errors, status: :unprocessable_entity
-    end
-  end
-
-  # DELETE /votes/1
+  # DELETE /blogs/:blog_id/vote
   def destroy
-    @vote.destroy
+    @blog.votes.where(user: current_user).destroy_all
+    render json: vote_payload(0)
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_vote
-      @vote = Vote.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def vote_params
-      params.require(:vote).permit(:upvote, :downvote)
-    end
+  def set_blog
+    @blog = Blog.visible_to(current_user).find(params[:blog_id])
+  end
+
+  def vote_payload(value)
+    { blog_id: @blog.id, value: value, score: @blog.votes.sum(:value) }
+  end
 end

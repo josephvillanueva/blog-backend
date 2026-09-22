@@ -1,15 +1,14 @@
 Rails.application.routes.draw do
-  resources :tags
-  resources :votes
-  resources :comments
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  get "/up", to: proc { [200, { "Content-Type" => "text/plain" }, ["ok"]] }
 
-  # Defines the root path route ("/")
-  # root "articles#index"
-
-  resources :blogs;
-
-  resource :users, only: [:create]
+  post "/users", to: "users#create"
   post "/login", to: "users#login"
   get "/auto_login", to: "users#auto_login"
+
+  resources :blogs do
+    resources :comments, only: %i[index create update destroy], shallow: true
+    resource :vote, only: %i[create destroy]
+  end
+
+  resources :tags, only: :index
 end

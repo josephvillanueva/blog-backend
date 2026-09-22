@@ -1,9 +1,4 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  upvote: 1
-  downvote: 1
-
-two:
-  upvote: 1
-  downvote: 1
+bob_up_alice:
+  user: bob
+  blog: alice_post
+  value: 1
