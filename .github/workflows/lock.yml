@@ -1,0 +1,20 @@
+# Temporary: resolves Gemfile.lock for the Rails 7.2 upgrade on Linux, since
+# the lockfile cannot be generated on the development machine. Removed once
+# the lockfile is committed.
+name: Resolve lockfile
+on:
+  push:
+    branches: [chore/rails-7.2]
+jobs:
+  lock:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: false
+      - run: bundle lock --add-platform x86_64-linux x64-mingw-ucrt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gemfile-lock
+          path: Gemfile.lock
