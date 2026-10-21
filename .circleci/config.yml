@@ -1,0 +1,42 @@
+version: 2.1
+jobs:
+  test:
+    docker:
+      - image: cimg/ruby:3.3
+      - image: postgres:16
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+    resource_class: small
+    environment:
+      RAILS_ENV: test
+      CI: "true"
+      PGHOST: localhost
+      PGPORT: "5432"
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    steps:
+      - checkout
+      - run:
+          name: Install locked gems
+          command: |
+            gem install bundler -v 2.5.22 --no-document
+            bundle _2.5.22_ config set --local frozen true
+            bundle _2.5.22_ install --jobs 2 --retry 3
+      - run:
+          name: Wait for PostgreSQL
+          command: |
+            ruby -rpg -e '30.times { begin; PG.connect(host: ENV.fetch("PGHOST"), user: ENV.fetch("PGUSER"), password: ENV.fetch("PGPASSWORD"), dbname: "postgres").close; exit 0; rescue PG::Error; sleep 2; end }; abort "PostgreSQL did not become ready"'
+      - run:
+          name: Run migrations
+          command: bundle _2.5.22_ exec rails db:create db:migrate
+      - run:
+          name: Check schema matches migrations
+          command: git diff --exit-code db/schema.rb
+      - run:
+          name: Run tests
+          command: bundle _2.5.22_ exec rails test
+workflows:
+  ci:
+    jobs:
+      - test
