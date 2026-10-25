@@ -1,4 +1,9 @@
 version: 2.1
+
+parameters:
+  force_full:
+    type: boolean
+    default: false
 jobs:
   test:
     docker:
@@ -17,6 +22,13 @@ jobs:
       PGPASSWORD: postgres
     steps:
       - checkout
+      - run:
+          name: Check whether full verification is needed
+          environment:
+            CI_DEFAULT_BRANCH: "main"
+            CI_BASE_REVISION: << pipeline.git.base_revision >>
+            CI_FORCE_FULL: << pipeline.parameters.force_full >>
+          command: bash .circleci/should-run.sh
       - run:
           name: Install locked gems
           command: |
@@ -38,5 +50,10 @@ jobs:
           command: bundle _2.5.22_ exec rails test
 workflows:
   ci:
+    when:
+      or:
+        - << pipeline.parameters.force_full >>
+        - not:
+            equal: ["main", << pipeline.git.branch >>]
     jobs:
       - test
